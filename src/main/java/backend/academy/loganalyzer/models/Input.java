@@ -6,26 +6,30 @@ import backend.academy.loganalyzer.converter.LocalDateConverter;
 import backend.academy.loganalyzer.enums.Filter;
 import backend.academy.loganalyzer.enums.Format;
 import com.beust.jcommander.Parameter;
-import lombok.Getter;
 import java.time.LocalDate;
+import lombok.Getter;
 
 @Getter
 public class Input {
     @Parameter(names = "--path", description = "glob or url")
     private String globOrUrl;
 
-    @Parameter(names = "--from", converter = LocalDateConverter.class,description = "from date")
+    @Parameter(names = "--from", converter = LocalDateConverter.class, description = "from date")
     private LocalDate from;
 
     @Parameter(names = "--to", converter = LocalDateConverter.class, description = "to date")
     private LocalDate to;
 
-    @Parameter(names = "--format", converter = FormatConverter.class,description = "format")
+    @Parameter(names = "--format", converter = FormatConverter.class, description = "format")
     private Format format;
 
-    @Parameter(names = "--filter-field", converter = FilterConverter.class,description = "filter-field")
+    @Parameter(names = "--filter-field", converter = FilterConverter.class, description = "filter-field")
     private Filter filter;
 
     @Parameter(names = "--filter-value", description = "filter-value")
     private String filterValue;
+
+    public String getGlobOrUrl() {
+        return globOrUrl;
+    }
 }

@@ -7,11 +7,11 @@ import com.beust.jcommander.IStringConverter;
 public class FilterConverter implements IStringConverter<Filter> {
     @Override
     public Filter convert(String value) {
-        return switch (value){
+        return switch (value) {
             case "ip" -> Filter.IP;
-            case "user" -> Filter.USER;
             case "method" -> Filter.METHOD;
             case "resource" -> Filter.RESOURCE;
+            case "protocol" -> Filter.PROTOCOL;
             case "code" -> Filter.CODE;
             case "size" -> Filter.SIZE;
             case "referer" -> Filter.REFERER;

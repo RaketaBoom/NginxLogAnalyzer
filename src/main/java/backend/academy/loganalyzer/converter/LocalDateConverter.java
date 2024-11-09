@@ -10,10 +10,9 @@ public class LocalDateConverter implements IStringConverter<LocalDate> {
 
     @Override
     public LocalDate convert(String value) {
-        try{
+        try {
             return LocalDate.parse(value, formatter);
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             throw new UnforamttedDateException();
         }
     }

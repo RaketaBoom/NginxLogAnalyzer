@@ -3,7 +3,9 @@ package backend.academy.loganalyzer.parser;
 import backend.academy.loganalyzer.models.Input;
 import backend.academy.loganalyzer.validators.Validator;
 import com.beust.jcommander.JCommander;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class InputParser {
     public static Input parse(String[] args) {
         Input input = new Input();

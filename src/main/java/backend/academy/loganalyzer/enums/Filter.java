@@ -2,9 +2,9 @@ package backend.academy.loganalyzer.enums;
 
 public enum Filter {
     IP,
-    USER,
     METHOD,
     RESOURCE,
+    PROTOCOL,
     CODE,
     SIZE,
     REFERER,
