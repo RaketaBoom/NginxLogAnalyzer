@@ -9,7 +9,7 @@ public class LogDateFilter {
     private final LocalDate from;
     private final LocalDate to;
 
-    public boolean check(Log log) {
+    public boolean isDateInRange(Log log) {
         LocalDate logDate = LocalDate.from(log.timestamp());
 
         if (from != null && logDate.isBefore(from)) {
