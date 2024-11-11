@@ -1,7 +1,10 @@
-package backend.academy.loganalyzer.analyzer;
+package backend.academy.loganalyzer.analyzer.impl;
 
+import backend.academy.loganalyzer.analyzer.Analyzer;
+import backend.academy.loganalyzer.constants.Constants;
 import backend.academy.loganalyzer.exceptions.ConnectionException;
 import backend.academy.loganalyzer.exceptions.MaxRetriesExceededException;
+import backend.academy.loganalyzer.exceptions.UrlReadException;
 import backend.academy.loganalyzer.filtration.LogDateFilter;
 import backend.academy.loganalyzer.filtration.LogFiltration;
 import backend.academy.loganalyzer.models.Log;
@@ -18,27 +21,25 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import static backend.academy.loganalyzer.constants.Constants.CONNECT_TIMEOUT;
-import static backend.academy.loganalyzer.constants.Constants.MAX_RETRIES;
-import static backend.academy.loganalyzer.constants.Constants.READ_TIMEOUT;
 
 @Slf4j
 @RequiredArgsConstructor
-public class UrlAnalyzer {
+public class UrlAnalyzer implements Analyzer {
     private final String url;
     private final LogFiltration filtration;
     private final LogDateFilter dateFilter;
+    private final HttpClient client;
 
-    private final HttpClient client = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(CONNECT_TIMEOUT))
-        .build();
-
+    @Override
     public LogSummary analyze() {
         int currLine = 0;
         LogSummary logSummary = new LogSummary();
 
-        for (int i = 0; i < MAX_RETRIES; ++i) {
-            try (InputStream inputStream = retry();
+        int attempt = 0;
+
+        while (attempt < Constants.MAX_RETRIES) {
+            attempt++;
+            try (InputStream inputStream = connect();
                  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
                 String line;
@@ -46,9 +47,9 @@ public class UrlAnalyzer {
 
                 // Чтение данных с пропуском уже обработанных строк
                 while ((line = reader.readLine()) != null) {
-                    if (lineCount >= currLine) {  // Пропускаем уже обработанные строки
+                    if (lineCount >= currLine) {
                         Log logModel = LogParser.parse(line);
-                        if (checkLog(logModel)) {
+                        if (isValidLog(logModel)) {
                             logSummary.addLog(logModel);
                         }
                         currLine++;
@@ -59,24 +60,24 @@ public class UrlAnalyzer {
                 return logSummary;
 
             } catch (IOException e) {
-                log.error("Ошибка ввода-вывода: {}", e.getMessage(), e);
+                throw new UrlReadException();
             } catch (InterruptedException e) {
-                log.error("Поток прерван");
                 Thread.currentThread().interrupt();
+                throw new UrlReadException();
             }
         }
 
         throw new MaxRetriesExceededException(url);
     }
 
-    private boolean checkLog(Log logModel) {
-        return filtration.matches(logModel) && dateFilter.check(logModel);
+    private boolean isValidLog(Log logModel) {
+        return filtration.matches(logModel) && dateFilter.isDateInRange(logModel);
     }
 
-    private InputStream retry() throws IOException, InterruptedException {
+    private InputStream connect() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(url))
-            .timeout(Duration.ofSeconds(READ_TIMEOUT))
+            .timeout(Duration.ofSeconds(Constants.READ_TIMEOUT))
             .GET()
             .build();
 
@@ -84,9 +85,8 @@ public class UrlAnalyzer {
 
         if (response.statusCode() == 200) {
             return response.body();
-        } else {
-            throw new ConnectionException(response.statusCode());
         }
+        throw new ConnectionException(response.statusCode());
     }
 }
 
