@@ -28,8 +28,4 @@ public class Input {
 
     @Parameter(names = "--filter-value", description = "filter-value")
     private String filterValue;
-
-    public String getGlobOrUrl() {
-        return globOrUrl;
-    }
 }
