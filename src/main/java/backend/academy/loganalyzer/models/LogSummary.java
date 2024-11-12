@@ -1,12 +1,12 @@
 package backend.academy.loganalyzer.models;
 
+import backend.academy.loganalyzer.constants.Constants;
 import backend.academy.loganalyzer.exceptions.EmptyLogException;
 import com.tdunning.math.stats.TDigest;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import static backend.academy.loganalyzer.constants.Constants.COMPRESSION_FACTOR;
 
 @Getter
 @AllArgsConstructor
@@ -20,7 +20,7 @@ public class LogSummary {
     public LogSummary() {
         count = 0;
         sum = 0d;
-        tDigest = TDigest.createDigest(COMPRESSION_FACTOR);
+        tDigest = TDigest.createDigest(Constants.COMPRESSION_FACTOR);
         resources = new HashMap<>();
         codes = new HashMap<>();
     }
