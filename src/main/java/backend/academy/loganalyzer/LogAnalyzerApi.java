@@ -1,20 +1,19 @@
 package backend.academy.loganalyzer;
 
-import backend.academy.loganalyzer.dto.FileInputDTO;
-import backend.academy.loganalyzer.dto.UrlInputDTO;
+import backend.academy.loganalyzer.constants.Constants;
 import backend.academy.loganalyzer.enums.Format;
-import backend.academy.loganalyzer.formatter.ReportFormatter;
-import backend.academy.loganalyzer.formatter.impl.AdocFormatter;
-import backend.academy.loganalyzer.formatter.impl.MarkdownFormatter;
 import backend.academy.loganalyzer.mapper.InputMapper;
 import backend.academy.loganalyzer.models.Input;
 import backend.academy.loganalyzer.models.Report;
 import backend.academy.loganalyzer.parser.InputParser;
 import backend.academy.loganalyzer.service.LogAnalyzerService;
 import backend.academy.loganalyzer.validators.Validator;
-import org.mapstruct.factory.Mappers;
-import static backend.academy.loganalyzer.constants.Constants.PATH;
+import backend.academy.loganalyzer.writer.ReportFileWriter;
+import backend.academy.loganalyzer.writer.impl.ReportAdocWriter;
+import backend.academy.loganalyzer.writer.impl.ReportMarkdownWriter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class LogAnalyzerApi {
     private final String[] args;
 
@@ -24,32 +23,39 @@ public class LogAnalyzerApi {
     public LogAnalyzerApi(String[] args) {
         this.args = args.clone();
         this.logAnalyzerService = new LogAnalyzerService();
-        this.inputMapper = Mappers.getMapper(InputMapper.class);
+        this.inputMapper = new InputMapper();
     }
 
     public void start() {
-        Input input = InputParser.parse(args);
 
-        Report report = createReport(input);
+        try {
+            Input input = InputParser.parse(args);
 
-        ReportFormatter formatter = getReportFormatter(report.format());
+            long startTime = System.nanoTime(); // замер времени выполнения
+            Report report = createReport(input);
+            long finishTime = System.nanoTime();
+            long duration = (finishTime - startTime) / 1000000;
 
-        formatter.format(report, PATH);
+            log.info("Время выполнения: {}", duration);
+
+            ReportFileWriter formatter = getReportFormatter(report.format());
+
+            formatter.createFile(report, Constants.REPORT_DIRECTORY);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
-    private ReportFormatter getReportFormatter(Format format) {
+    private ReportFileWriter getReportFormatter(Format format) {
         return switch (format) {
-            case ADOC -> new AdocFormatter();
-            case MARKDOWN -> new MarkdownFormatter();
+            case ADOC -> new ReportAdocWriter();
+            case MARKDOWN -> new ReportMarkdownWriter();
         };
     }
 
     private Report createReport(Input input) {
-        if (Validator.isUrl(input.globOrUrl())) {
-            UrlInputDTO urlInputDTO = inputMapper.inputToUrlInputDTO(input);
-            return logAnalyzerService.makeReportFromUrl(urlInputDTO);
-        }
-        FileInputDTO fileInputDTO = inputMapper.inputToFileInputDTO(input);
-        return logAnalyzerService.makeReportFromFile(fileInputDTO);
+        return Validator.isUrl(input.globOrUrl())
+            ? logAnalyzerService.makeReportFromUrl(inputMapper.inputToUrlInputDTO(input))
+            : logAnalyzerService.makeReportFromFile(inputMapper.inputToFileInputDTO(input));
     }
 }
