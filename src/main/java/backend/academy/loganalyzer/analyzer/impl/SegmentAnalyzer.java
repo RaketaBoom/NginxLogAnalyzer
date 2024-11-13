@@ -7,6 +7,7 @@ import backend.academy.loganalyzer.models.Log;
 import backend.academy.loganalyzer.models.LogSummary;
 import backend.academy.loganalyzer.models.Segment;
 import backend.academy.loganalyzer.parser.LogParser;
+import backend.academy.loganalyzer.validators.Validator;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -19,16 +20,13 @@ public class SegmentAnalyzer implements Analyzer {
     public LogSummary analyze() {
         LogSummary logSummary = new LogSummary();
         String line;
+
         while ((line = segment.readLine()) != null) {
             Log logModel = LogParser.parse(line);
-            if (isValidLog(logModel)) {
+            if (Validator.isValidLog(logModel, filtration, dateFilter)) {
                 logSummary.addLog(logModel);
             }
         }
         return logSummary;
-    }
-
-    private boolean isValidLog(Log logModel) {
-        return filtration.matches(logModel) && dateFilter.isDateInRange(logModel);
     }
 }

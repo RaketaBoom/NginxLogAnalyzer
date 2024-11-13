@@ -1,5 +1,6 @@
 package backend.academy.loganalyzer.spliterator;
 
+import backend.academy.loganalyzer.exceptions.SegmentationErrorException;
 import backend.academy.loganalyzer.models.Segment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,30 +21,35 @@ public class SegmentSpliterator {
 
     private int numberOfSegments;
 
-    public List<Segment> split() throws IOException {
-        var fileSize = Files.size(file);
-        var segmentSize = fileSize / numberOfSegments;
-
-        if (segmentSize <= (1 << 8)) { // small segment: 1 is enough
-            numberOfSegments = 1;
-        }
-
+    public List<Segment> split() {
         List<Segment> segments = new ArrayList<>(numberOfSegments);
 
-        var pos = 0L;
-        for (var s = 0; s < numberOfSegments - 1; s++) {
+        try {
+            var fileSize = Files.size(file);
+            var segmentSize = fileSize / numberOfSegments;
+
+            if (segmentSize <= (1 << 8)) { // small segment: 1 is enough
+                numberOfSegments = 1;
+            }
+
+            var pos = 0L;
+            for (var s = 0; s < numberOfSegments - 1; s++) {
+                try (var channel = (FileChannel) Files.newByteChannel(file, READ)) {
+                    var buff = channel.map(READ_ONLY, pos, segmentSize);
+                    pos = normalize(buff, (int) segmentSize - 1, pos);
+                    segments.add(new Segment(buff));
+                }
+            }
+
+            // handle last segment
             try (var channel = (FileChannel) Files.newByteChannel(file, READ)) {
-                var buff = channel.map(READ_ONLY, pos, segmentSize);
-                pos = normalize(buff, (int) segmentSize - 1, pos);
+                var buff = channel.map(READ_ONLY, pos, fileSize - pos);
                 segments.add(new Segment(buff));
             }
+        } catch (IOException e) {
+            throw new SegmentationErrorException();
         }
 
-        // handle last segment
-        try (var channel = (FileChannel) Files.newByteChannel(file, READ)) {
-            var buff = channel.map(READ_ONLY, pos, fileSize - pos);
-            segments.add(new Segment(buff));
-        }
         return segments;
     }
 

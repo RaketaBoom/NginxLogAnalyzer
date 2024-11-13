@@ -9,9 +9,7 @@ import backend.academy.loganalyzer.utils.LogSummaryMerger;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RequiredArgsConstructor
 public class ListFilesAnalyzer implements Analyzer {
     private final List<Path> files;
@@ -20,18 +18,15 @@ public class ListFilesAnalyzer implements Analyzer {
 
     @Override
     public LogSummary analyze() {
-
-        List<LogSummary> logSummaries = files
-            .stream()
+        return LogSummaryMerger.merge(files.stream()
             .map(this::fileAnalyze)
-            .toList();
-
-        return LogSummaryMerger.merge(logSummaries);
+            .toList());
     }
 
     private LogSummary fileAnalyze(Path file) {
-        Analyzer analyzer = Constants.MULTITHREADING_MODE ? new FileMultithreadingAnalyzer(file, filtration, dateFilter)
-            : new FileSingleThreadingAnalyzer(file, filtration, dateFilter);
-        return analyzer.analyze();
+        return (Constants.MULTITHREADING_MODE
+            ? new FileMultithreadingAnalyzer(file, filtration, dateFilter)
+            : new FileSingleThreadingAnalyzer(file, filtration, dateFilter)
+        ).analyze();
     }
 }
