@@ -30,32 +30,34 @@ public class ReportMarkdownWriter implements ReportFileWriter {
                 markdown.toString(),
                 StandardOpenOption.TRUNCATE_EXISTING,
                 StandardOpenOption.CREATE
-                );
+            );
         } catch (IOException e) {
             throw new FileWriteException();
         }
     }
 
-    private StringBuilder parameters(Report report){
+    private StringBuilder parameters(Report report) {
         StringBuilder str = new StringBuilder();
         str.append("## Параметры\n\n")
             .append("| Параметр       | Значение |\n")
             .append("|----------------|----------|\n")
             .append("| Формат         | ").append(report.format()).append(" |\n")
-            .append(report.from() != null ? "| Начальная дата | " + report.from() + "\n": "")
-            .append(report.to() != null ? "| Конечная дата | " + report.to() + "\n": "")
-            .append(report.filter() != null ? "| Фильтр | " + report.filter() + "\n": "")
-            .append(report.filterValue() != null ? "| Значение фильтра | " + report.filterValue() + "\n\n": "\n\n");
+            .append(report.from() != null ? "| Начальная дата | " + report.from() + "\n" : "")
+            .append(report.to() != null ? "| Конечная дата | " + report.to() + "\n" : "")
+            .append(report.filter() != null ? "| Фильтр | " + report.filter() + "\n" : "")
+            .append(report.filterValue() != null ? "| Значение фильтра | " + report.filterValue() + "\n\n" : "\n\n");
         return str;
     }
 
-    private StringBuilder files(Report report){
+    private StringBuilder files(Report report) {
         StringBuilder str = new StringBuilder();
         str.append("## Файлы\n\n")
             .append("| Название         | Ссылка |\n")
             .append("|------------------|--------|\n");
-        if(report.files() == null)
+        if (report.files() == null) {
+            str.append("\n\n");
             return str;
+        }
         report.files()
             .forEach(x -> str
                 .append("| ").append(x.getFileName()).append(" | ")
@@ -66,7 +68,7 @@ public class ReportMarkdownWriter implements ReportFileWriter {
         return str;
     }
 
-    private StringBuilder statistic(Report report){
+    private StringBuilder statistic(Report report) {
         StringBuilder str = new StringBuilder();
         str.append("## Статистика\n\n")
             .append("| Метрика         | Значение |\n")
@@ -77,7 +79,7 @@ public class ReportMarkdownWriter implements ReportFileWriter {
         return str;
     }
 
-    private StringBuilder resources(Report report){
+    private StringBuilder resources(Report report) {
         StringBuilder str = new StringBuilder();
         str.append("## Ресурсы\n\n")
             .append("| Ресурс               | Количество запросов |\n")
@@ -87,7 +89,7 @@ public class ReportMarkdownWriter implements ReportFileWriter {
         return str;
     }
 
-    private StringBuilder codes(Report report){
+    private StringBuilder codes(Report report) {
         StringBuilder str = new StringBuilder();
         str.append("\n## Коды ответов\n\n")
             .append("| Код  | Название | Количество |\n")

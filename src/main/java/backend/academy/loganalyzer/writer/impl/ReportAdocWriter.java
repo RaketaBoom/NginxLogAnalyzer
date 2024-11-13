@@ -12,6 +12,7 @@ import java.nio.file.StandardOpenOption;
 public class ReportAdocWriter implements ReportFileWriter {
     private static final String CELL_BORDER = "|===\n";
     private static final String TABLE_BORDER = "|===\n\n";
+
     @Override
     public void createFile(Report report, String path) {
         StringBuilder adoc = new StringBuilder();
@@ -34,18 +35,20 @@ public class ReportAdocWriter implements ReportFileWriter {
         }
     }
 
-    private StringBuilder files(Report report){
+    private StringBuilder files(Report report) {
         StringBuilder str = new StringBuilder();
         str.append("== Файлы\n\n")
             .append(CELL_BORDER)
             .append("| Название | Ссылка\n");
 
-        if(report.files() == null)
+        if (report.files() == null) {
+            str.append(TABLE_BORDER);
             return str;
+        }
         report.files()
             .forEach(x -> str
                 .append("| ").append(x.getFileName()).append(" | ")
-                .append(" link:").append(x.toString().replace('\\','/'))
+                .append(" link:").append(x.toString().replace('\\', '/'))
                 .append("[").append(x).append("]")
                 .append("\n"));
         str.append(TABLE_BORDER);
