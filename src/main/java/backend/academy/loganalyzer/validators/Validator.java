@@ -4,12 +4,13 @@ import backend.academy.loganalyzer.enums.Filter;
 import backend.academy.loganalyzer.exceptions.IllegalDateValueException;
 import backend.academy.loganalyzer.exceptions.IllegalFilterValueException;
 import backend.academy.loganalyzer.exceptions.IllegalPathValueException;
+import backend.academy.loganalyzer.exceptions.MissingParameterPathException;
 import backend.academy.loganalyzer.filtration.LogDateFilter;
 import backend.academy.loganalyzer.filtration.LogFiltration;
 import backend.academy.loganalyzer.models.Log;
-import lombok.experimental.UtilityClass;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Validator {
@@ -28,6 +29,9 @@ public class Validator {
     }
 
     public static void validatePath(String value) {
+        if (value == null) {
+            throw new MissingParameterPathException();
+        }
         if (!(isGlob(value) || isUrl(value))) {
             throw new IllegalPathValueException();
         }
