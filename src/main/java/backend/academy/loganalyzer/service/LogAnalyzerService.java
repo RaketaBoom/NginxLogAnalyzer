@@ -70,10 +70,22 @@ public class LogAnalyzerService {
         LocalDate from,
         LocalDate localDate,
         Filter filter,
-        String s
+        String filterValue
     ) {
         if (logSummary.count() == 0) {
-            throw new ArithmeticException();
+            return new Report(
+                files,
+                format == null ? Constants.DEFAULT_FORMAT : format,
+                from,
+                localDate,
+                filter,
+                filterValue,
+                    0,
+                0d,
+                0d,
+                logSummary.resources(),
+                logSummary.codes()
+            );
         }
         double avg = logSummary.sum() / logSummary.count();
         double percentile = logSummary.tDigest().quantile(Constants.PERCENTILE_VALUE);
@@ -84,7 +96,7 @@ public class LogAnalyzerService {
             from,
             localDate,
             filter,
-            s,
+            filterValue,
             logSummary.count(),
             avg,
             percentile,

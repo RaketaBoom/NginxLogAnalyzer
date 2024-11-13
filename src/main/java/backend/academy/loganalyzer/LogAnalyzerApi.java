@@ -15,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LogAnalyzerApi {
+    public static final int NANOS_IN_MILLISECOND = 1_000_000;
     private final String[] args;
-
     private final LogAnalyzerService logAnalyzerService;
     private final InputMapper inputMapper;
 
@@ -34,13 +34,13 @@ public class LogAnalyzerApi {
             long startTime = System.nanoTime(); // замер времени выполнения
             Report report = createReport(input);
             long finishTime = System.nanoTime();
-            long duration = (finishTime - startTime) / 1000000;
+            long duration = (finishTime - startTime) / NANOS_IN_MILLISECOND;
 
-            log.info("Время выполнения: {}", duration);
+            log.info("Время выполнения: {} мc", duration);
 
-            ReportFileWriter formatter = getReportFormatter(report.format());
+            ReportFileWriter writer = getReportFormatter(report.format());
 
-            formatter.createFile(report, Constants.REPORT_DIRECTORY);
+            writer.createFile(report, Constants.REPORT_DIRECTORY);
         } catch (Exception e) {
             log.error(e.getMessage());
         }

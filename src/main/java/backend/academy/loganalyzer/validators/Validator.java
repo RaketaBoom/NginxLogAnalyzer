@@ -18,7 +18,6 @@ public class Validator {
     private static final Pattern URL_PATTERN = Pattern.compile(
         "^(http|https)://[^\\s/$.?#].[^\\s]*$" // Простой паттерн для URL
     );
-    public static final int MIN_LINE_SIZE_FILTER_VALUE = 3;
 
     public static boolean isGlob(String value) {
         return GLOB_PATTERN.matcher(value).matches();
