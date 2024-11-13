@@ -23,7 +23,12 @@ public class ReportAdocWriter implements ReportFileWriter {
         adoc.append(codes(report));
 
         try {
-            Files.writeString(Path.of(path, "report.adoc"), adoc.toString(), StandardOpenOption.CREATE);
+            Files.writeString(
+                Path.of(path, "report.adoc"),
+                adoc.toString(),
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.CREATE
+            );
         } catch (IOException e) {
             throw new FileWriteException();
         }
@@ -31,11 +36,19 @@ public class ReportAdocWriter implements ReportFileWriter {
 
     private StringBuilder files(Report report){
         StringBuilder str = new StringBuilder();
+        str.append("== Файлы\n\n")
+            .append(CELL_BORDER)
+            .append("| Название | Ссылка\n");
+
         if(report.files() == null)
             return str;
-        str.append("Файл(-ы): ");
         report.files()
-            .forEach(x -> str.append(x).append(" "));
+            .forEach(x -> str
+                .append("| ").append(x.getFileName()).append(" | ")
+                .append(" link:").append(x.toString().replace('\\','/'))
+                .append("[").append(x).append("]")
+                .append("\n"));
+        str.append(TABLE_BORDER);
         return str;
     }
 

@@ -1,9 +1,9 @@
 package backend.academy.loganalyzer.writer.impl;
 
 import backend.academy.loganalyzer.exceptions.FileWriteException;
-import backend.academy.loganalyzer.writer.ReportFileWriter;
 import backend.academy.loganalyzer.httpcodes.HttpStatusCodeMapper;
 import backend.academy.loganalyzer.models.Report;
+import backend.academy.loganalyzer.writer.ReportFileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +25,12 @@ public class ReportMarkdownWriter implements ReportFileWriter {
         markdown.append(codes(report));
 
         try {
-            Files.writeString(Path.of(path, "report.md"), markdown.toString(), StandardOpenOption.CREATE);
+            Files.writeString(
+                Path.of(path, "report.md"),
+                markdown.toString(),
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.CREATE
+                );
         } catch (IOException e) {
             throw new FileWriteException();
         }
@@ -46,11 +51,18 @@ public class ReportMarkdownWriter implements ReportFileWriter {
 
     private StringBuilder files(Report report){
         StringBuilder str = new StringBuilder();
+        str.append("## Файлы\n\n")
+            .append("| Название         | Ссылка |\n")
+            .append("|------------------|--------|\n");
         if(report.files() == null)
             return str;
-        str.append("Файл(-ы): ");
         report.files()
-            .forEach(x -> str.append(x).append(" "));
+            .forEach(x -> str
+                .append("| ").append(x.getFileName()).append(" | ")
+                .append(" [").append(x).append("]")
+                .append("(").append(x).append(")")
+                .append("\n"));
+        str.append("\n\n");
         return str;
     }
 
