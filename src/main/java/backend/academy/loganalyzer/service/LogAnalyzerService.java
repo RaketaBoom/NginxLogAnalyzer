@@ -14,6 +14,7 @@ import backend.academy.loganalyzer.filtration.LogFiltration;
 import backend.academy.loganalyzer.models.LogSummary;
 import backend.academy.loganalyzer.models.Report;
 import backend.academy.loganalyzer.parser.PathsParser;
+import java.math.BigDecimal;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -80,15 +81,15 @@ public class LogAnalyzerService {
                 localDate,
                 filter,
                 filterValue,
-                    0,
-                0d,
-                0d,
+                0,
+                BigDecimal.ZERO,
+                BigDecimal.ZERO,
                 logSummary.resources(),
                 logSummary.codes()
             );
         }
-        double avg = logSummary.sum() / logSummary.count();
-        double percentile = logSummary.tDigest().quantile(Constants.PERCENTILE_VALUE);
+        BigDecimal avg = BigDecimal.valueOf(logSummary.sum() / logSummary.count());
+        BigDecimal percentile = BigDecimal.valueOf(logSummary.tDigest().quantile(Constants.PERCENTILE_VALUE));
 
         return new Report(
             files,
