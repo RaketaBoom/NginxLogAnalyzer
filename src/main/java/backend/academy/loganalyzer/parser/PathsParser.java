@@ -1,5 +1,6 @@
 package backend.academy.loganalyzer.parser;
 
+import backend.academy.loganalyzer.exceptions.DirectoryNotExistException;
 import backend.academy.loganalyzer.exceptions.GlobHandleException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -10,15 +11,23 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 
-@UtilityClass
+@RequiredArgsConstructor
 public class PathsParser {
-    public static List<Path> parse(String glob) {
-        List<Path> paths = new ArrayList<>();
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
+    private final String directory;
 
-        try (Stream<Path> stream = Files.walk(Paths.get(""))) {
+    public List<Path> parse(String glob) {
+        Path dirPath = Paths.get(directory);
+
+        if (!Files.exists(dirPath) || !Files.isDirectory(dirPath)) {
+            throw new DirectoryNotExistException(directory);
+        }
+
+        List<Path> paths = new ArrayList<>();
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + directory + "/" + glob);
+
+        try (Stream<Path> stream = Files.walk(dirPath)) {
             stream.filter(path -> matcher.matches(path) && path.toString().endsWith(".txt"))
                 .forEach(paths::add);
         } catch (IOException e) {

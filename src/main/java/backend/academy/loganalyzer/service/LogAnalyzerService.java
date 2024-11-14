@@ -15,6 +15,7 @@ import backend.academy.loganalyzer.models.LogSummary;
 import backend.academy.loganalyzer.models.Report;
 import backend.academy.loganalyzer.parser.PathsParser;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LogAnalyzerService {
+    private static final int SCALE = 3;
+
     public Report makeReportFromUrl(UrlInputDTO urlInputDTO) {
         HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(Constants.CONNECT_TIMEOUT))
@@ -40,7 +43,7 @@ public class LogAnalyzerService {
     }
 
     public Report makeReportFromFile(FileInputDTO fileInputDTO) {
-        List<Path> files = PathsParser.parse(fileInputDTO.glob());
+        List<Path> files = (new PathsParser(Constants.INPUT_DIRECTORY)).parse(fileInputDTO.glob());
         if (files.isEmpty()) {
             throw new FilesNotFoundException();
         }
@@ -88,8 +91,10 @@ public class LogAnalyzerService {
                 logSummary.codes()
             );
         }
-        BigDecimal avg = BigDecimal.valueOf(logSummary.sum() / logSummary.count());
-        BigDecimal percentile = BigDecimal.valueOf(logSummary.tDigest().quantile(Constants.PERCENTILE_VALUE));
+        BigDecimal avg = BigDecimal.valueOf(logSummary.sum() / logSummary.count())
+            .setScale(SCALE, RoundingMode.HALF_UP);
+        BigDecimal percentile = BigDecimal.valueOf(logSummary.tDigest().quantile(Constants.PERCENTILE_VALUE))
+            .setScale(SCALE, RoundingMode.HALF_UP);
 
         return new Report(
             files,
