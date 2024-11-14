@@ -14,7 +14,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Validator {
-    private static final Pattern GLOB_PATTERN = Pattern.compile("^([\\w.-]+/){0,5}[\\w.-]*\\*{1,2}(/?[\\w.-]+){0,5}$");
+    private static final Pattern GLOB_PATTERN = Pattern.compile("^([\\w.-]+/){0,5}[\\w.-]*\\*{0,2}(/?[\\w.-]+){0,5}$");
 
     private static final Pattern URL_PATTERN = Pattern.compile(
         "^(http|https)://[^\\s/$.?#].[^\\s]*$"

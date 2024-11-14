@@ -4,7 +4,8 @@ import backend.academy.loganalyzer.enums.Filter;
 import backend.academy.loganalyzer.models.Log;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LogFiltrationTest {
     static Log log;
@@ -14,7 +15,6 @@ class LogFiltrationTest {
         log = new Log("192.168.1.1", null, "GET", "/downloads/product_1",
             "HTTP/1.1", 304, 1150, "-", "Debian APT-HTTP/1.3 (0.8.16~exp12ubuntu10.21");
     }
-
 
     @Test
     void testMatches_ip_true() {

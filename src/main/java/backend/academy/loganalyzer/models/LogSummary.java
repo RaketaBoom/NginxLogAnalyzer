@@ -41,7 +41,7 @@ public class LogSummary {
     }
 
     public LogSummary add(LogSummary other) {
-        if (other == null){
+        if (other == null) {
             throw new EmptyLogSummaryException();
         }
         this.count += other.count;

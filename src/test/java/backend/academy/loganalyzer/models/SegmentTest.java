@@ -17,7 +17,9 @@ class SegmentTest {
         // Act && Assert
         assertThat(segment.readLine()).isNotNull();
         assertThat(segment.readLine()).isNotNull();
-        assertThat(segment.readLine()).isEqualTo("162.12.113.73 - - [10/Nov/2024:20:33:43 +0000] \"GET /holistic%20hardware.js HTTP/1.1\" 301 57 \"-\" \"Opera/10.34 (X11; Linux x86_64; en-US) Presto/2.10.342 Version/10.00\"");
+        assertThat(segment.readLine()).isEqualTo(
+            "162.12.113.73 - - [10/Nov/2024:20:33:43 +0000] \"GET /holistic%20hardware.js HTTP/1.1\" 301 57 " +
+            "\"-\" \"Opera/10.34 (X11; Linux x86_64; en-US) Presto/2.10.342 Version/10.00\"");
         assertThat(segment.readLine()).isNull();
     }
 
