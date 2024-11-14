@@ -6,12 +6,10 @@ import java.util.regex.Pattern;
 
 public class LogFiltration {
     private final Filter filter;
-    private final String value;
     private final Pattern pattern;
 
     public LogFiltration(Filter filter, String value) {
         this.filter = filter;
-        this.value = value;
         this.pattern = (value != null) ? Pattern.compile(value.replace("*", ".*")) : null;
     }
 
@@ -21,8 +19,8 @@ public class LogFiltration {
             case METHOD -> pattern.matcher(log.method()).matches();
             case RESOURCE -> pattern.matcher(log.resource()).matches();
             case PROTOCOL -> pattern.matcher(log.protocol()).matches();
-            case CODE -> log.code().equals(Integer.parseInt(value));
-            case SIZE -> log.size().equals(Integer.parseInt(value));
+            case CODE -> pattern.matcher(log.code().toString()).matches();
+            case SIZE -> pattern.matcher(log.size().toString()).matches();
             case REFERER -> pattern.matcher(log.referer()).matches();
             case AGENT -> pattern.matcher(log.agent()).matches();
             case null -> true;
