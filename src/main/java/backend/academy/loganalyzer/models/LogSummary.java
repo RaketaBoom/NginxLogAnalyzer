@@ -2,6 +2,7 @@ package backend.academy.loganalyzer.models;
 
 import backend.academy.loganalyzer.constants.Constants;
 import backend.academy.loganalyzer.exceptions.EmptyLogException;
+import backend.academy.loganalyzer.exceptions.EmptyLogSummaryException;
 import com.tdunning.math.stats.TDigest;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,9 @@ public class LogSummary {
     }
 
     public LogSummary add(LogSummary other) {
+        if (other == null){
+            throw new EmptyLogSummaryException();
+        }
         this.count += other.count;
         this.sum += other.sum;
         this.tDigest.add(other.tDigest);
