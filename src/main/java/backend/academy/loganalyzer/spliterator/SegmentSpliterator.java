@@ -2,8 +2,6 @@ package backend.academy.loganalyzer.spliterator;
 
 import backend.academy.loganalyzer.exceptions.SegmentationErrorException;
 import backend.academy.loganalyzer.models.Segment;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -11,12 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import static java.nio.channels.FileChannel.MapMode.READ_ONLY;
 import static java.nio.file.StandardOpenOption.READ;
 
 @AllArgsConstructor
 @Getter
 public class SegmentSpliterator {
+    private static final int SMALL_SEGMENT_SIZE = 256;
     private final Path file;
 
     private int numberOfSegments;
@@ -28,7 +29,7 @@ public class SegmentSpliterator {
             var fileSize = Files.size(file);
             var segmentSize = fileSize / numberOfSegments;
 
-            if (segmentSize <= (1 << 8)) { // small segment: 1 is enough
+            if (segmentSize <= SMALL_SEGMENT_SIZE) { // small segment: 1 is enough
                 numberOfSegments = 1;
             }
 
@@ -53,12 +54,13 @@ public class SegmentSpliterator {
         return segments;
     }
 
-    private long normalize(ByteBuffer buff, int relativePos, long pos) {
-        while (buff.get(relativePos) != '\n') {
-            relativePos--;
+    private long normalize(ByteBuffer buff, int lastPosInBuff, long pos) {
+        int size = lastPosInBuff;
+        while (buff.get(size) != '\n') {
+            size--;
         }
 
-        buff.limit(relativePos + 1);
-        return pos + (relativePos + 1);
+        buff.limit(size + 1);
+        return pos + (size + 1);
     }
 }

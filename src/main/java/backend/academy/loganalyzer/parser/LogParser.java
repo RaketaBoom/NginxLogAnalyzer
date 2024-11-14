@@ -145,25 +145,29 @@ public class LogParser {
         return indexSymbol(line, iterator, '"');
     }
 
-    private static int passOneSymbol(int i) {
+    private static int passOneSymbol(int index) {
+        int i = index;
         i++;
         return i;
     }
 
-    private static int passTwoSymbols(int i) {
-        i++;
-        i++;
-        return i;
-    }
-
-    private static int passThreeSymbols(int i) {
-        i++;
+    private static int passTwoSymbols(int index) {
+        int i = index;
         i++;
         i++;
         return i;
     }
 
-    private static int indexSymbol(String line, int iterator, char t) {
+    private static int passThreeSymbols(int index) {
+        int i = index;
+        i++;
+        i++;
+        i++;
+        return i;
+    }
+
+    private static int indexSymbol(String line, int index, char t) {
+        int iterator = index;
         while (line.charAt(iterator) != t) {
             iterator++;
         }

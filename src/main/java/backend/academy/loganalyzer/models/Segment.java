@@ -1,7 +1,7 @@
 package backend.academy.loganalyzer.models;
 
-import lombok.RequiredArgsConstructor;
 import java.nio.ByteBuffer;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class Segment {
@@ -9,12 +9,14 @@ public class Segment {
     private final ByteBuffer buffer;
     private int iterator = 0;
 
-    public String readLine(){
+    public String readLine() {
         byte b;
-        if (iterator == buffer.limit()) return null;
+        if (iterator == buffer.limit()) {
+            return null;
+        }
         byte[] line = new byte[MAX_LINE_SIZE];
         int offset = 0;
-        while(iterator != buffer.limit() && (b = buffer.get(iterator++)) != '\n'){
+        while (iterator != buffer.limit() && (b = buffer.get(iterator++)) != '\n') {
             line[offset++] = b;
         }
         return new String(line, 0, offset);

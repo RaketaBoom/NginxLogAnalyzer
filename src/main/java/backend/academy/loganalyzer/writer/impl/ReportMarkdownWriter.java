@@ -10,18 +10,18 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public class ReportMarkdownWriter implements ReportFileWriter {
+    private static final String TABLE_BORDER = "\n\n";
+    private static final String END_TABLE_LINE = " |\n";
+    private static final String FIELD_BORDER = " | ";
+
     @Override
     public void createFile(Report report, String path) {
         StringBuilder markdown = new StringBuilder();
 
         markdown.append(files(report));
-
         markdown.append(parameters(report));
-
         markdown.append(statistic(report));
-
         markdown.append(resources(report));
-
         markdown.append(codes(report));
 
         try {
@@ -41,11 +41,12 @@ public class ReportMarkdownWriter implements ReportFileWriter {
         str.append("## Параметры\n\n")
             .append("| Параметр       | Значение |\n")
             .append("|----------------|----------|\n")
-            .append("| Формат         | ").append(report.format()).append(" |\n")
+            .append("| Формат         | ").append(report.format()).append(END_TABLE_LINE)
             .append(report.from() != null ? "| Начальная дата | " + report.from() + "\n" : "")
             .append(report.to() != null ? "| Конечная дата | " + report.to() + "\n" : "")
             .append(report.filter() != null ? "| Фильтр | " + report.filter() + "\n" : "")
-            .append(report.filterValue() != null ? "| Значение фильтра | " + report.filterValue() + "\n\n" : "\n\n");
+            .append(report.filterValue() != null ? "| Значение фильтра | " + report.filterValue() + TABLE_BORDER :
+                TABLE_BORDER);
         return str;
     }
 
@@ -55,16 +56,16 @@ public class ReportMarkdownWriter implements ReportFileWriter {
             .append("| Название         | Ссылка |\n")
             .append("|------------------|--------|\n");
         if (report.files() == null) {
-            str.append("\n\n");
+            str.append(TABLE_BORDER);
             return str;
         }
         report.files()
             .forEach(x -> str
-                .append("| ").append(x.getFileName()).append(" | ")
+                .append("| ").append(x.getFileName()).append(FIELD_BORDER)
                 .append(" [").append(x).append("]")
                 .append("(").append(x).append(")")
                 .append("\n"));
-        str.append("\n\n");
+        str.append(TABLE_BORDER);
         return str;
     }
 
@@ -73,8 +74,8 @@ public class ReportMarkdownWriter implements ReportFileWriter {
         str.append("## Статистика\n\n")
             .append("| Метрика         | Значение |\n")
             .append("|-----------------|----------|\n")
-            .append("| Количество запросов | ").append(report.requestCount()).append(" |\n")
-            .append("| Средний размер   | ").append(report.avgSize()).append(" |\n")
+            .append("| Количество запросов | ").append(report.requestCount()).append(END_TABLE_LINE)
+            .append("| Средний размер   | ").append(report.avgSize()).append(END_TABLE_LINE)
             .append("| 95-й перцентиль | ").append(report.percentile()).append(" |\n\n");
         return str;
     }
@@ -85,7 +86,7 @@ public class ReportMarkdownWriter implements ReportFileWriter {
             .append("| Ресурс               | Количество запросов |\n")
             .append("|----------------------|---------------------|\n");
         report.resources().forEach((resource, count) ->
-            str.append("| ").append(resource).append(" | ").append(count).append(" |\n"));
+            str.append("| ").append(resource).append(FIELD_BORDER).append(count).append(END_TABLE_LINE));
         return str;
     }
 
@@ -96,7 +97,7 @@ public class ReportMarkdownWriter implements ReportFileWriter {
             .append("|------|----------|------------|\n");
         report.popularCodes().forEach((code, count) ->
             str.append("| ").append(code).append("|").append(HttpStatusCodeMapper.getDescription(code))
-                .append(" | ").append(count).append(" |\n"));
+                .append(FIELD_BORDER).append(count).append(END_TABLE_LINE));
         return str;
     }
 }

@@ -12,6 +12,7 @@ import java.nio.file.StandardOpenOption;
 public class ReportAdocWriter implements ReportFileWriter {
     private static final String CELL_BORDER = "|===\n";
     private static final String TABLE_BORDER = "|===\n\n";
+    private static final String FIELD_BORDER = " | ";
 
     @Override
     public void createFile(Report report, String path) {
@@ -47,7 +48,7 @@ public class ReportAdocWriter implements ReportFileWriter {
         }
         report.files()
             .forEach(x -> str
-                .append("| ").append(x.getFileName()).append(" | ")
+                .append("| ").append(x.getFileName()).append(FIELD_BORDER)
                 .append(" link:").append(x.toString().replace('\\', '/'))
                 .append("[").append(x).append("]")
                 .append("\n"));
@@ -87,7 +88,7 @@ public class ReportAdocWriter implements ReportFileWriter {
             .append(CELL_BORDER)
             .append("| Ресурс | Количество запросов\n");
         report.resources().forEach((resource, count) ->
-            str.append("| ").append(resource).append(" | ").append(count).append("\n"));
+            str.append("| ").append(resource).append(FIELD_BORDER).append(count).append("\n"));
         str.append(TABLE_BORDER);
         return str;
     }
@@ -98,8 +99,8 @@ public class ReportAdocWriter implements ReportFileWriter {
             .append(CELL_BORDER)
             .append("| Код | Название | Количество\n");
         report.popularCodes().forEach((code, count) ->
-            str.append("| ").append(code).append(" | ").append(HttpStatusCodeMapper.getDescription(code))
-                .append(" | ").append(count).append("\n"));
+            str.append("| ").append(code).append(FIELD_BORDER).append(HttpStatusCodeMapper.getDescription(code))
+                .append(FIELD_BORDER).append(count).append("\n"));
         str.append(TABLE_BORDER);
         return str;
     }

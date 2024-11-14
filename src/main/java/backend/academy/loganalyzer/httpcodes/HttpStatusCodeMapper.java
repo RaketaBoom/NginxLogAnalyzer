@@ -1,12 +1,12 @@
 package backend.academy.loganalyzer.httpcodes;
 
-import lombok.experimental.UtilityClass;
 import java.util.Map;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class HttpStatusCodeMapper {
 
-    private static final Map<Integer, String> codeDescriptions = Map.ofEntries(
+    private static final Map<Integer, String> CODE_DESCRIPTIONS = Map.ofEntries(
         // 1xx Informational
         Map.entry(100, "Continue"),
         Map.entry(101, "Switching Protocols"),
@@ -89,6 +89,6 @@ public class HttpStatusCodeMapper {
     );
 
     public static String getDescription(int code) {
-        return codeDescriptions.getOrDefault(code, "Unknown Status Code");
+        return CODE_DESCRIPTIONS.getOrDefault(code, "Unknown Status Code");
     }
 }
