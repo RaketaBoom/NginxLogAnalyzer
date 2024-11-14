@@ -45,8 +45,8 @@ public class ReportMarkdownWriter implements ReportFileWriter {
             .append(report.from() != null ? "| Начальная дата | " + report.from() + "\n" : "")
             .append(report.to() != null ? "| Конечная дата | " + report.to() + "\n" : "")
             .append(report.filter() != null ? "| Фильтр | " + report.filter() + "\n" : "")
-            .append(report.filterValue() != null ? "| Значение фильтра | " + report.filterValue() + TABLE_BORDER :
-                TABLE_BORDER);
+            .append(report.filterValue() != null ? "| Значение фильтра | " + report.filterValue() + TABLE_BORDER
+                : TABLE_BORDER);
         return str;
     }
 

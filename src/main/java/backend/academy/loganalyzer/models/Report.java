@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("RecordComponentNumber")
 public record Report(
     List<Path> files,
     Format format,
