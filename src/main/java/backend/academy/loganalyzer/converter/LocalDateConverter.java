@@ -1,6 +1,6 @@
 package backend.academy.loganalyzer.converter;
 
-import backend.academy.loganalyzer.exceptions.UnforamttedDateException;
+import backend.academy.loganalyzer.exceptions.UnformattedDateException;
 import com.beust.jcommander.IStringConverter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +13,7 @@ public class LocalDateConverter implements IStringConverter<LocalDate> {
         try {
             return LocalDate.parse(value, formatter);
         } catch (Exception ex) {
-            throw new UnforamttedDateException();
+            throw new UnformattedDateException();
         }
     }
 }
