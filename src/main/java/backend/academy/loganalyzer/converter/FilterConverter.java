@@ -6,17 +6,11 @@ import com.beust.jcommander.IStringConverter;
 
 public class FilterConverter implements IStringConverter<Filter> {
     @Override
-    public Filter convert(String value) {
-        return switch (value) {
-            case "ip" -> Filter.IP;
-            case "method" -> Filter.METHOD;
-            case "resource" -> Filter.RESOURCE;
-            case "protocol" -> Filter.PROTOCOL;
-            case "code" -> Filter.CODE;
-            case "size" -> Filter.SIZE;
-            case "referer" -> Filter.REFERER;
-            case "agent" -> Filter.AGENT;
-            default -> throw new IllegalFilterValueException("Не задано значение фильтрации");
-        };
+    public Filter convert(String title) {
+        Filter filter = Filter.valueOfLabel(title);
+        if (filter == null) {
+            throw new IllegalFilterValueException("Не задано значение фильтрации");
+        }
+        return filter;
     }
 }
